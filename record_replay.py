@@ -69,7 +69,10 @@ def replay():
             pyautogui.click(x, y)  #使用鼠标点击(x, y)
         elif temp[0] == "key":
             s = temp[1]
-            pyautogui.typewrite(s)  #使用键盘输入字符abcde
+            if s != "Return":
+                pyautogui.typewrite(s)  #使用键盘输入字符abcde
+            else:
+                pyautogui.press(s)
         else:
             pass
 
