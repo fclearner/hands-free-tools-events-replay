@@ -1,9 +1,13 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
+
 import pyautogui
 import PyHook3 as pyHook
 import pythoncom
 
 import os
-import sys
 import time
 from datetime import datetime
 
@@ -106,12 +110,67 @@ def record():
     # 循环监听
     pythoncom.PumpMessages()
 
-if __name__ == "__main__":
-    if not judgeRecord():
-        f = open("c:/users/auto.txt", "w")
-        f.close()
-        print("你还未记录脚本链,请进行记录,esc键退出记录")
+def clear():
+    os.remove("c:/users/auto.txt")
+
+class App(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.title = "PyQt5 button"
+        self.left = 10
+        self.top = 100
+        self.width = 320
+        self.height = 200
+        self.initUI()
+    
+    def initUI(self):
+        
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        """在窗体内创建button对象"""
+        button1 = QPushButton("record", self)
+        """方法setToolTip在用户将鼠标停留在按钮上时显示的消息"""
+        button1.setToolTip("you can record events by clicking this button, press ESC end the record")
+        """按钮坐标x = 100, y = 70"""
+        button1.move(50, 50)
+        """按钮与鼠标点击事件相关联"""
+        button1.clicked.connect(self.on_click1)
+
+        button2 = QPushButton("replay", self)
+        """方法setToolTip在用户将鼠标停留在按钮上时显示的消息"""
+        button2.setToolTip("you can replay the recorded events by clicking this button")
+        """按钮坐标x = 100, y = 70"""
+        button2.move(50, 100)
+        """按钮与鼠标点击事件相关联"""
+        button2.clicked.connect(self.on_click2)
+
+        button3 = QPushButton("clear", self)
+        """方法setToolTip在用户将鼠标停留在按钮上时显示的消息"""
+        button3.setToolTip("you can clear the recorded events by clicking this button")
+        """按钮坐标x = 100, y = 70"""
+        button3.move(100, 75)
+        """按钮与鼠标点击事件相关联"""
+        button3.clicked.connect(self.on_click3)
+        
+        self.show()
+    """创建鼠标点击事件"""
+    @pyqtSlot()
+    def on_click1(self):
         record()
-    else:
-        print("你已经记录了脚本链,如要重新记录,请删除c:/users/auto.txt")
-        replay()
+
+    @pyqtSlot()
+    def on_click2(self):
+        if not judgeRecord():
+            print("你还未记录脚本链,请进行记录,esc键退出记录")
+        else:
+            time.sleep(2)
+            replay()
+
+    @pyqtSlot()
+    def on_click3(self):
+        clear()
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
